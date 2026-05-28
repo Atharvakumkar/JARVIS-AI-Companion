@@ -1,31 +1,585 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WakuWaku</title>
-    <link rel="stylesheet" href="/static/style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <title>J.A.R.V.I.S.</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;700&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+
+  <style>
+
+    *{
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root{
+      --bg: #050505;
+      --panel: #090909;
+      --surface: #111111;
+      --border: #1e1e1e;
+      --border-light: #2d2d2d;
+      --text: #f5f5f5;
+      --muted: #7a7a7a;
+      --accent: #9be7ff;
+    }
+
+    html,
+    body{
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+
+      background: var(--bg);
+      color: var(--text);
+
+      font-family: 'DM Mono', monospace;
+
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body{
+      display: flex;
+    }
+
+    /* =========================
+       MAIN APP
+    ========================== */
+
+    .app{
+      width: 100%;
+      height: 100vh;
+
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+
+      overflow: hidden;
+
+      background:
+      radial-gradient(circle at top left,
+      rgba(255,255,255,0.03),
+      transparent 25%),
+
+      radial-gradient(circle at bottom right,
+      rgba(255,255,255,0.02),
+      transparent 30%),
+
+      var(--bg);
+    }
+
+    /* =========================
+       LEFT PANEL
+    ========================== */
+
+    .left-panel{
+      position: relative;
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      padding: 60px;
+
+      border-right: 1px solid var(--border);
+
+      background:
+      radial-gradient(circle at center,
+      rgba(155,231,255,0.06),
+      transparent 60%),
+      linear-gradient(
+      180deg,
+      #090909 0%,
+      #050505 100%);
+
+      overflow: hidden;
+    }
+
+    .left-panel::before{
+      content: "";
+
+      position: absolute;
+
+      width: 700px;
+      height: 700px;
+
+      border-radius: 50%;
+
+      background:
+      radial-gradient(circle,
+      rgba(155,231,255,0.04),
+      transparent 70%);
+    }
+
+    /* =========================
+       HEADER LABELS
+    ========================== */
+
+    .jarvis-label{
+      position: absolute;
+
+      top: 34px;
+      left: 40px;
+
+      font-family: 'Syne', sans-serif;
+
+      font-size: 16px;
+      letter-spacing: 0.35em;
+
+      color: var(--text);
+    }
+
+    .status-indicator{
+      position: absolute;
+
+      top: 38px;
+      right: 40px;
+
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      color: var(--muted);
+
+      font-size: 12px;
+      letter-spacing: 0.15em;
+    }
+
+    .status-dot{
+      width: 8px;
+      height: 8px;
+
+      border-radius: 50%;
+
+      background: var(--accent);
+
+      box-shadow:
+      0 0 10px var(--accent),
+      0 0 25px var(--accent);
+    }
+
+    /* =========================
+       AVATAR
+    ========================== */
+
+    .avatar-wrapper{
+      width: 430px;
+      height: 430px;
+
+      border-radius: 50%;
+
+      position: relative;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      background:
+      radial-gradient(circle at center,
+      rgba(255,255,255,0.05),
+      rgba(255,255,255,0.01));
+
+      border: 1px solid rgba(255,255,255,0.08);
+
+      backdrop-filter: blur(20px);
+
+      z-index: 2;
+    }
+
+    .avatar-wrapper::before{
+      content: "";
+
+      position: absolute;
+      inset: -18px;
+
+      border-radius: 50%;
+
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .avatar-wrapper::after{
+      content: "";
+
+      position: absolute;
+      inset: -42px;
+
+      border-radius: 50%;
+
+      border: 1px dashed rgba(255,255,255,0.06);
+
+      animation: rotate 20s linear infinite;
+    }
+
+    #character-image{
+      width: 300px;
+      height: 300px;
+
+      object-fit: cover;
+      border-radius: 50%;
+
+      z-index: 2;
+    }
+
+    @keyframes rotate{
+      from{
+        transform: rotate(0deg);
+      }
+
+      to{
+        transform: rotate(360deg);
+      }
+    }
+
+    #status{
+      margin-top: 50px;
+
+      color: var(--muted);
+
+      font-size: 16px;
+      letter-spacing: 0.04em;
+
+      text-align: center;
+
+      max-width: 420px;
+      line-height: 1.8;
+
+      z-index: 2;
+    }
+
+    /* =========================
+       RIGHT PANEL
+    ========================== */
+
+    .right-panel{
+      display: flex;
+      flex-direction: column;
+
+      height: 100vh;
+
+      background: #050505;
+    }
+
+    /* =========================
+       TOPBAR
+    ========================== */
+
+    .topbar{
+      min-height: 90px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding: 0 40px;
+
+      border-bottom: 1px solid var(--border);
+
+      background: rgba(0,0,0,0.35);
+
+      backdrop-filter: blur(20px);
+
+      flex-shrink: 0;
+    }
+
+    .topbar-title{
+      font-family: 'Syne', sans-serif;
+
+      font-size: 20px;
+
+      letter-spacing: 0.18em;
+    }
+
+    #voice-select{
+      background: var(--surface);
+
+      border: 1px solid var(--border-light);
+
+      color: var(--text);
+
+      padding: 12px 18px;
+
+      border-radius: 14px;
+
+      outline: none;
+
+      font-family: 'DM Mono', monospace;
+
+      cursor: pointer;
+    }
+
+    /* =========================
+       CHAT AREA
+    ========================== */
+
+    .chat-area{
+      flex: 1;
+
+      overflow-y: auto;
+
+      padding: 48px;
+
+      display: flex;
+      flex-direction: column;
+
+      gap: 24px;
+    }
+
+    .chat-area::-webkit-scrollbar{
+      width: 0;
+    }
+
+    /* =========================
+       MESSAGE STYLES
+    ========================== */
+
+    .message{
+      max-width: 80%;
+
+      padding: 18px 22px;
+
+      border-radius: 18px;
+
+      line-height: 1.8;
+
+      font-size: 15px;
+
+      border: 1px solid var(--border);
+    }
+
+    .message.user{
+      align-self: flex-end;
+
+      background: var(--surface);
+    }
+
+    .message.bot{
+      align-self: flex-start;
+
+      background: #0b0b0b;
+    }
+
+    /* =========================
+       INPUT AREA
+    ========================== */
+
+    .input-container{
+      padding: 30px 48px;
+
+      border-top: 1px solid var(--border);
+
+      background: #0a0a0a;
+
+      flex-shrink: 0;
+    }
+
+    .input-wrapper{
+      display: flex;
+      align-items: flex-end;
+
+      gap: 18px;
+    }
+
+    #text-input{
+      flex: 1;
+
+      background: var(--surface);
+
+      border: 1px solid var(--border-light);
+
+      color: var(--text);
+
+      border-radius: 20px;
+
+      padding: 20px 22px;
+
+      resize: none;
+      outline: none;
+
+      min-height: 68px;
+      max-height: 220px;
+
+      font-size: 16px;
+      line-height: 1.8;
+
+      font-family: 'DM Mono', monospace;
+
+      transition: 0.2s ease;
+    }
+
+    #text-input:focus{
+      border-color: rgba(155,231,255,0.35);
+
+      box-shadow:
+      0 0 0 4px rgba(155,231,255,0.05);
+    }
+
+    #text-input::placeholder{
+      color: var(--muted);
+    }
+
+    /* =========================
+       SEND BUTTON
+    ========================== */
+
+    #send-button{
+      width: 68px;
+      height: 68px;
+
+      border-radius: 20px;
+
+      border: none;
+
+      background: var(--text);
+      color: var(--bg);
+
+      cursor: pointer;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      transition: 0.2s ease;
+    }
+
+    #send-button:hover{
+      transform: translateY(-2px);
+      opacity: 0.92;
+    }
+
+    #send-button svg{
+      width: 22px;
+      height: 22px;
+    }
+
+    /* =========================
+       MOBILE
+    ========================== */
+
+    @media(max-width: 1000px){
+
+      .app{
+        grid-template-columns: 1fr;
+      }
+
+      .left-panel{
+        display: none;
+      }
+
+      .chat-area{
+        padding: 24px;
+      }
+
+      .input-container{
+        padding: 20px;
+      }
+
+      .topbar{
+        padding: 0 24px;
+      }
+
+    }
+
+  </style>
 </head>
+
 <body>
-    <div class="chat-container">
-        <header class="chat-header">
-            <h1>AI Companion</h1>
-        </header>
-        <div class="character-viewer">
-            <img id="character-image" src="/static/images/char-mouth-closed.png" alt="WakuWaku">
+
+  <main class="app">
+
+    <!-- LEFT SIDE -->
+
+    <section class="left-panel">
+
+      <div class="jarvis-label">
+        J.A.R.V.I.S
+      </div>
+
+      <div class="status-indicator">
+        <div class="status-dot"></div>
+        ONLINE
+      </div>
+
+      <div class="avatar-wrapper">
+
+        <img
+          id="character-image"
+          src="/static/images/char-mouth-closed.png"
+          alt="JARVIS"
+        >
+
+      </div>
+
+      <p id="status">
+        Awaiting your command.
+      </p>
+
+    </section>
+
+    <!-- RIGHT SIDE -->
+
+    <section class="right-panel">
+
+      <header class="topbar">
+
+        <div class="topbar-title">
+          PERSONAL AI ASSISTANT
         </div>
-        <p id="status">Ask me something!</p>
-        <footer class="chat-input-area">
-            <select id="voice-select"></select>
-            <textarea id="text-input" placeholder="Ask me anything..."></textarea>
-            <button id="send-button">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24px" height="24px"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-            </button>
-        </footer>
-    </div>
-    <script src="/static/app.js"></script>
+
+        <select id="voice-select"></select>
+
+      </header>
+
+      <div class="chat-area"></div>
+
+      <footer class="input-container">
+
+        <div class="input-wrapper">
+
+          <textarea
+            id="text-input"
+            rows="1"
+            placeholder="Ask me anything..."
+          ></textarea>
+
+          <button id="send-button">
+
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+            </svg>
+
+          </button>
+
+        </div>
+
+      </footer>
+
+    </section>
+
+  </main>
+
+  <script src="/static/app.js"></script>
+
+  <script>
+
+    const ta = document.getElementById('text-input');
+
+    ta.addEventListener('input', () => {
+      ta.style.height = 'auto';
+      ta.style.height = Math.min(ta.scrollHeight, 220) + 'px';
+    });
+
+  </script>
+
 </body>
 </html>

@@ -14,7 +14,7 @@ if character_exists:
     import character
     runner = InMemoryRunner(
         agent=character.root_agent,
-        app_name="Demo App",
+        app_name="Demo_App",
     )
 
 @app.route('/')
