@@ -21,7 +21,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function populateVoiceList() {
         const allVoices = speechSynthesis.getVoices();
-        voices = allVoices.filter(voice => voice.name.includes('Google'));
+        let filtered = allVoices.filter(voice => voice.name.includes('Google') || voice.name.includes('Microsoft') || voice.lang.startsWith('en'));
+        if (filtered.length === 0) {
+            filtered = allVoices;
+        }
+        voices = filtered;
         voiceSelect.innerHTML = '';
 
         let usVoiceIndex = -1;
@@ -33,8 +37,8 @@ document.addEventListener('DOMContentLoaded', () => {
             option.setAttribute('data-name', voice.name);
             voiceSelect.appendChild(option);
 
-            if (voice.lang === 'en-US') {
-                if (usVoiceIndex === -1) { // Find the first US voice
+            if (voice.lang === 'en-US' || voice.lang.startsWith('en')) {
+                if (usVoiceIndex === -1) { // Find the first US/English voice
                     usVoiceIndex = i;
                 }
             }
@@ -89,10 +93,17 @@ document.addEventListener('DOMContentLoaded', () => {
         clearInterval(lipSyncInterval);
 
         const utterance = new SpeechSynthesisUtterance(text);
-        const selectedOption = voiceSelect.selectedOptions[0].getAttribute('data-name');
-        const selectedVoice = voices.find(voice => voice.name === selectedOption);
-        if (selectedVoice) {
-            utterance.voice = selectedVoice;
+        
+        // Robotic parameters to give the voice a monotone, calculated JARVIS feel
+        utterance.pitch = 0.55; 
+        utterance.rate = 0.95;
+
+        const selectedOption = voiceSelect.selectedOptions[0] ? voiceSelect.selectedOptions[0].getAttribute('data-name') : null;
+        if (selectedOption) {
+            const selectedVoice = voices.find(voice => voice.name === selectedOption);
+            if (selectedVoice) {
+                utterance.voice = selectedVoice;
+            }
         }
 
         utterance.onstart = () => {
